@@ -1,0 +1,21 @@
+form{
+	width: 50%;
+	margin: auto;
+}
+body{
+	margin-top: 2%;
+}
+.huella{
+	display: none;
+}
+.btn-danger{
+	margin-top: -134px;
+	margin-left: 80%;
+}
+
+.oculto{
+	display: none;
+}
+.imagen{
+	border-radius: 4px 2px 2px 4px;
+}
