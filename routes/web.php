@@ -47,8 +47,8 @@ Route::get('reportesGeneral/', 'reportesController@reportesGenerales')->name('re
 
 //Route::post('auth','Auth\LoginController@login')->name('auth');
 Route::get('/reportesBono/','reportesBono@index')->name('reportesBono');
-Route::get('/reportes/','reportesController@index')->name('reportes');
-
+Route::get('/reportesExel/','reportesController@index')->name('reportesEx');
+Route::get('/reportes/','reportesController@rep')->name('reportes');
 Route::get('/personal/','personalController@index')->name('personal');
 Route::get('/checadas/','checadasController@index')->name('checadas');
 Route::get('/horarios/','horariosController@index')->name('horarios');

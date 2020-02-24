@@ -27,7 +27,7 @@ class reportesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public static function faltas($args, $opcion,$f1="1",$f2="2"){
+    public static function faltas($args, $opcion,$f1,$f2){
 
         $fechaInicio=$f1;
         $fechaFinal=$f2;
@@ -49,27 +49,20 @@ class reportesController extends Controller
         */
         
     }
-    public static function comentarios($args,$f1="1",$f2="2"){
-        
-        // $comentarios = mdlChecadas::where([
-        //     ['id_tblPersonal', '=', $args],
-        // ])->get();  
-        
+    public static function falts($args,$f1,$f2){
+
         $fechaInicio=$f1;
         $fechaFinal=$f2;
-        $comentarios = \App\mdlChecadas::orderBy('id','ASC')
+        
+        $checadas = \App\mdlChecadas::orderBy('id','desc')
         ->where('id_tblPersonal', '=', $args)
         ->whereBetween('fecha',[$fechaInicio,$fechaFinal])
         ->get();
 
-        $comen = "";
-        foreach ($comentarios as $var) {
-            $comen = $comen . '  ' .$var->comentario;
-        }
-        return $comen;
+
+        return $checadas;
+
     }
-
-
     public function index(Request $request)
     {
 
@@ -88,7 +81,25 @@ class reportesController extends Controller
 
         return view('reportes',compact('personal'));
     }
-    
+    public function rep(Request $request)
+    {
+
+        $fechaInicio=$request->get('fechaInicio'); 
+
+        $fechaFinal=$request->get('fechaFinal');    
+
+        $nombre=$request->get('nombre'); 
+
+        $expediente=$request->get('expediente');    
+
+        $personal = \App\mdlPersonal::orderBy('modulo','ASC')->orderBy('nombre', 'ASC')
+        ->nombre($nombre)
+        ->expediente($expediente)
+        ->paginate(20);
+
+        return view('reportes/rep2',compact('personal'));
+    }
+
     /**
      * Regresa la vista de reportesGenerales
      */

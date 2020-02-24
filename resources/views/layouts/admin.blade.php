@@ -125,8 +125,11 @@
               <a class="active-tab" href="{{ url('reportes') }}">Reportes</a>
             </li>
             <li class="dropdown messages-menu">
-                <a class="active-tab" href='{{ url('reportesGeneral') }}'>Reportes generales</a>
-            </li>        
+              <a class="active-tab" href="{{ url('reportesExel') }}">Reportes Exel</a>
+            </li>
+            <!--li class="dropdown messages-menu">
+                <a class="active-tab" href="{{ url('reportesGeneral') }}">Reportes generales</a>
+            </li-->        
             <li class="dropdown messages-menu">
               <a class="active-tab" href="{{ url('register') }}">Registrar admin</a>
             </li>

@@ -152,7 +152,7 @@ class checadasController extends Controller
             return Redirect::to('/personal');
         }
 
-        $checada = \App\mdlChecadas::orderBy('id','ASC')
+        $checada = \App\mdlChecadas::orderBy('id','DESC')
         ->where('id_tblPersonal', '=', $id)
         ->whereBetween('fecha', [$fechaInicio, $fechaFinal])
         ->paginate(7);
