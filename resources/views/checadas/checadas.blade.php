@@ -64,60 +64,63 @@ if(!isset($_GET['id'])){
 			<th>Entrada</th>
 			<th>Hora de salida</th>
 			<th>Salida</th>
-			<th>comentario</th>
-			<th>fecha</th>
+			<th>Comentario</th>
+			<th>Fecha</th>
 		</thead>
 		@foreach($checada as $checadas)
 		<tbody>
 			<td>{{$checadas->hora}}</td>
-			@if($checadas->checada==0)
-			<td>Con bono</td>
+			@if($checadas->checada!=null)
+				@if($checadas->checada==0)
+				<td>Con bono</td>
+				@endif
+				@if($checadas->checada==1)
+				<td>Asistencia</td>
+				@endif
+				@if($checadas->checada==2)
+				<td>Retardo</td>
+				@endif
+				@if($checadas->checada==3)
+				<td>Inasistencia</td>
+				@endif
+				@if($checadas->checada==4)
+				<td>Incapacidad</td>
+				@endif
+				@if($checadas->checada==5)
+				<td>Omision de checada</td>
+				@endif
+				@if($checadas->checada==6)
+				<td>Canje de tiempo extra</td>
+				@endif
+				@if($checadas->checada==7)
+				<td>Día económico</td>
+				@endif
+				@if($checadas->checada==8)
+				<td>Comisión</td>
+				@endif
+				@if($checadas->checada==11)
+				<td>Permiso por horas inicio</td>
+				@endif	
+			@else
+			<td></td>			
 			@endif
-			@if($checadas->checada==1)
-			<td>Asistencia</td>
-			@endif
-			@if($checadas->checada==2)
-			<td>Retardo</td>
-			@endif
-			@if($checadas->checada==3)
-			<td>Inasistencia</td>
-			@endif
-			@if($checadas->checada==4)
-			<td>Incapacidad</td>
-			@endif
-			@if($checadas->checada==5)
-			<td>Omision de checada</td>
-			@endif
-			@if($checadas->checada==6)
-			<td>Canje de tiempo extra</td>
-			@endif
-			@if($checadas->checada==7)
-			<td>Día económico</td>
-			@endif
-			@if($checadas->checada==8)
-			<td>Comisión</td>
-			@endif
-			@if($checadas->checada==9)
-			<td>Salida</td>
-			@endif
-			@if($checadas->checada==10)
-			<td>Salida anticipada</td>
-			@endif	
-			@if($checadas->checada==11)
-			<td>Permiso por horas inicio</td>
-			@endif						
-			@if($checadas->checada==11)
-			<td>Permiso por horas fin</td>
-			@endif	
 			<td>{{$checadas->hora_salida}}</td>
-			@if($checadas->checada_salida==1)
-			<td>Salida normal</td>
-			@endif
-			@if($checadas->checada_salida==2)
-			<td>Salida anticipada</td>
-			@endif
-			@if($checadas->checada_salida==5)
-			<td>Omisión de salida</td>
+			@if($checadas->checada_salida!=null)	
+				
+				@if($checadas->checada_salida==1)
+				<td>Salida normal</td>
+				@endif
+				@if($checadas->checada_salida==2)
+				<td>Salida anticipada</td>
+				@endif
+				@if($checadas->checada_salida==5)
+				<td>Omisión de salida</td>
+				@endif
+				@if($checadas->checada==11)
+				<td>Permiso por horas fin</td>
+				@endif
+			@else
+			<td></td>
 			@endif
 			<td>{{$checadas->comentario}}</td>
 			<td>{{$checadas->fecha}}</td>

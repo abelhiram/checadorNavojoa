@@ -58,10 +58,10 @@ class checadasController extends Controller
         
         $mdlChecadas->id_tblPersonal = $request->input('id_tblPersonal');
         $mdlChecadas->hora = $request->input('hora');  
-        $mdlChecadas->hora_salida = $request->input('hora');  
+        $mdlChecadas->hora_salida = $request->input('hora_salida');  
         $mdlChecadas->checada = $request->input('checada') ;
-        $mdlChecadas->checada_salida = '1';
-        $mdlChecadas->comentario = 'PC';
+        $mdlChecadas->checada_salida = $request->input('checada_salida') ;
+        $mdlChecadas->comentario = '';
         $mdlChecadas->fecha = $request->input('fecha'); 
         $mdlChecadas->save();
         Session::flash('message','Checada creada correctamente');

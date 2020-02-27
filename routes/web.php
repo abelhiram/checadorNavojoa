@@ -52,7 +52,7 @@ Route::get('/reportes/','reportesController@rep')->name('reportes');
 Route::get('/personal/','personalController@index')->name('personal');
 Route::get('/checadas/','checadasController@index')->name('checadas');
 Route::get('/horarios/','horariosController@index')->name('horarios');
-Route::get('/checkin/','checkinController@store')->name('checkin');
+Route::get('/checar/id/{id_tblPersonal}','checkinController@store');
 Route::get('/check/', 'checadasController@fal');
 //Route::get('/checadas/f1/{fechaInicio}/f2/{fechaFinal}','checadasController@index')->name('checadas');
 Route::get('/horario/{id}','horariosController@crear')->name('horarios.crear');

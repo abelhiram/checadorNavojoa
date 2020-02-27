@@ -99,34 +99,74 @@ if(!isset($_GET['fechaFinal'])){
 								<div class="form-group">
 									<div class="row">
                                         
-                                            <table class="table table-hover table-striped">
-                                                <thead> 
-                                                    </thead>
-                                                        <th>fecha</th>
-                                                        <th>hora entrada</th>
-                                                        <th>entrada</th>
-                                                        <th>hora salida</th>
-                                                        <th>salida</th>
-                                                        <th>comentario</th>
-                                                    </thead>
-                                                    @foreach(reportesController::falts($personals->id,$fechaInicio,$fechaFinal) as $ch)
-                                                    <tbody>
-                                                        <td>{{$ch->fecha}}</td>
-                                                        <td>{{$ch->hora}}</td>
-                                                        <td>{{$ch->checada}}</td>
-                                                        <td>{{$ch->hora_salida}}</td>
-                                                        <td>{{$ch->checada_salida}}</td>
-                                                        <td>{{$ch->comentario}}</td>
-                                                    </tbody>
-                                                    @endforeach
-                                                </table>
+                                        <table class="table table-hover table-striped">
+                                        	<thead> 
+                                                <th>fecha</th>
+                                                <th>hora entrada</th>
+                                                <th>entrada</th>
+                                                <th>hora salida</th>
+                                                <th>salida</th>
+                                                <th>comentario</th>
+                                            </thead>
+                                            @foreach(reportesController::falts($personals->id,$fechaInicio,$fechaFinal) as $ch)
+                                            <tbody>
+                                                <td>{{$ch->fecha}}</td>
+                                                <td>{{$ch->hora}}</td>
+                                                @if($ch->checada==0)
+                                                <td>Con bono</td>
+                                                @endif
+                                                @if($ch->checada==1)
+                                                <td>Normal</td>
+                                                @endif
+                                                @if($ch->checada==2)
+                                                <td>Retardo</td>
+                                                @endif
+                                                @if($ch->checada==3)
+                                                <td>Falta por tiempo</td>
+                                                @endif
+                                                @if($ch->checada==4)
+                                                <td>Incapacidad</td>
+                                                @endif
+                                                @if($ch->checada==5)
+                                                <td>Omision</td>
+                                                @endif
+                                                @if($ch->checada==6)
+                                                <td>Canje tiempo extra</td>
+                                                @endif
+                                                @if($ch->checada==7)
+                                                <td>Día económico</td>
+                                                @endif
+                                                @if($ch->checada==8)
+                                                <td>Comision</td>
+                                                @endif
+                                                @if($ch->checada==11)
+                                                <td>Permiso por horas inicio</td>
+                                                @endif
+
+                                                <td>{{$ch->hora_salida}}</td>
+
+                                                @if($ch->checada_salida==1)
+                                                <td>Salida</td>
+                                                @endif
+                                                @if($ch->checada_salida==2)
+                                                <td>Salida anticipada</td>
+                                                @endif
+                                                @if($ch->checada_salida==5)
+                                                <td>Omision</td>
+                                                @endif
+                                                @if($ch->checada_salida==11)
+                                                <td>Permiso por horas fin</td>
+                                                @endif
+                                                <td>{{$ch->comentario}}</td>
+                                            </tbody>
+                                            @endforeach
+                                        </table>
                                         
 									</div>
 								</div>
 							</div>	
 						</td>
 					</tr>		
-					
 				</tbody>
 			@endforeach	
 		</table>

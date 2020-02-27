@@ -33,11 +33,7 @@
                 	{!!Form::open(['route'=>'checkin.store', 'method'=>'POST', 'class'=>''])!!}
                         <label id="hora"></label>
 
-                        {!!Form::text('id_tblPersonal',null,['class'=>'form-control','placeholder'=>'Expediente'])!!}
-
-                        <!--\Carbon\Carbon::now()->toTimeString()-->
-                        <hr>
-                        {!!Form::submit('Check-in',['class'=>'btn btn-primary btn-block'])!!}
+                        
 					{!!Form::close()!!}
 					
 	                <div class="links">

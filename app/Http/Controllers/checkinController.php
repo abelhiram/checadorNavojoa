@@ -70,11 +70,11 @@ class checkinController extends Controller
 
     public function store(Request $request)
     { 
-
+        $msg = "";
         $personal = mdlPersonal::where('expediente', '=', $request['id_tblPersonal'])->get(); 
         if($personal->count()==0){
-            Session::flash('message',' NO EXISTE ESE USUARIO ');
-            return Redirect::to('/');     
+            $msg="NO EXISTE ESTE USUARIO";
+            return $msg;     
         }
         if($personal[0]->modulo != 1){
 
@@ -122,8 +122,8 @@ class checkinController extends Controller
 
                     if($falta!=0)
                     {
-                        Session::flash('message',$nombre.' TIENE UNA ENTRADA NO ATENDIDA ');
-                        return Redirect::to('/');     
+                        $msg = "TIENE UN PERMISO POR HORA NO ATENDIDO";
+                        return $msg;     
 
                     }else{
                         if($entradas==$salidas){
@@ -136,7 +136,7 @@ class checkinController extends Controller
                                 {  
                                     if($hora_checada>$hor->hora_salida)
                                     {
-                                        $entradasContempladas+1; 
+                                        $entradasContempladas=$entradasContempladas+1; 
                                         $horasOmitidas=$horasOmitidas.' - '.$hor->hora_entrada.' - ';
 
                                         $mdlChecadas = new mdlChecadas();
@@ -150,11 +150,16 @@ class checkinController extends Controller
                                         $mdlChecadas->save();
                                     }
                                 }
-                                $count+1;
+                                $count=$count+1;
                             }
 
                             $turno = 1;
                             $var = $this->entradas($personal[0]->id,$hoy)->count();
+                            $salidas = mdlChecadas::where([
+                                ['id_tblPersonal', '=', $personal[0]->id],
+                                ['hora_Salida', '!=', null],
+                                ['fecha', '=', $hoy],  
+                            ])->count();
                             if($horarios_count>$salidas)
                             {
                                 $hora_entrada = Carbon::parse($horarios[$var]->hora_entrada)->hour;
@@ -163,11 +168,12 @@ class checkinController extends Controller
                                 return $this->registroVariosHorario($nombre,$personal[0]->id, $hora, $hora_entrada,
                                 $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy,0,$turno,$var);  
                             }else{
-                                Session::flash('message',$nombre.' último horario '.$horarios[$var-1]->hora_entrada.'-'.$horarios[$var-1]->hora_salida);
-                                return Redirect::to('/');
+                                $msg = 'Último horario '.$horarios[$var-1]->hora_entrada.'-'.$horarios[$var-1]->hora_salida;
+                                return $msg;
                             }
                             
                         } else {
+
                             $turno = 2;
                             $var = $entradas - 1;
                             $hora_entrada = Carbon::parse($horarios[$var]->hora_entrada)->hour;
@@ -179,13 +185,13 @@ class checkinController extends Controller
                     }
                 }
             } else {
-                Session::flash('message',$nombre.' NO TIENE HORARIOS ');
-                return Redirect::to('/');
+                $msg = "NO TIENE HORARIOS";
+                return $msg;
             }     
         }
         else {
-            Session::flash('message', $personal[0]->nombre. ' NO ES UN USUARIO ACTIVO');
-            return Redirect::to('/');
+            $msg = "NO ES UN USUARIO ACTIVO";
+            return $msg;
         }
         
     }
@@ -203,28 +209,28 @@ class checkinController extends Controller
 
             if($hora_checada<$hora_entrada){
                 $mdlChecadas->checada = '0'; 
-                Session::flash('message','ENTRADA NORMAL '.$nombre);
+                $msg='ENTRADA CON BONO ';
             } elseif($hora_checada==$hora_entrada){
                 if($minuto_checada==0){
                     $mdlChecadas->checada = '0';    //Entrada con bono
-                    Session::flash('message','ENTRADA NORMAL '.$nombre);
+                    $msg='ENTRADA CON BONO ';
                 } elseif($minuto_checada>0 && $minuto_checada<16){
                     $mdlChecadas->checada = '1';   // Entrada normal
-                    Session::flash('message','ENTRADA NORMAL '.$nombre);
+                    $msg='ENTRADA NORMAL ';
                 } elseif ($minuto_checada>15 && $minuto_checada<31) {
                     $mdlChecadas->checada = '2';   //Retardo
-                    Session::flash('message','RETARDO '.$nombre);
+                    $msg='RETARDO ';
                 } elseif ($minuto_checada>30) {
                     $mdlChecadas->checada = '3';    //FALTA
-                    Session::flash('message','FALTA '.$nombre);
+                    $msg='FALTA ';
                 }
             } elseif($hora_checada>$hora_entrada){
                  $mdlChecadas->checada = '3';   //FALTA
-                 Session::flash('message','FALTA '.$nombre);
+                 $msg='FALTA '.$nombre;
             }
             
             $mdlChecadas->save();
-            return Redirect::to('/');     
+            return $msg;     
 
         } else {  
             $entrada = $this->entradas($personal,$fecha);
@@ -264,32 +270,32 @@ class checkinController extends Controller
             if($hora_checada<$hora_entrada)
             {
                 //Puede ser cambiado a entrada con bono
-                $mdlChecadas->checada = '1'; 
-                Session::flash('message','ENTRADA NORMAL '.$nombre);
+                $mdlChecadas->checada = '0'; 
+                $msg='ENTRADA CON BONO ';
             }
             elseif($hora_checada==$hora_entrada)
             {
                 if($minuto_checada==0){
-                    $mdlChecadas->checada = '1';    //Entrada con bono
-                    Session::flash('message','ENTRADA NORMAL '.$nombre);
+                    $mdlChecadas->checada = '0';    //Entrada con bono
+                    $msg='ENTRADA CON BONO';
                 } elseif($minuto_checada>0 && $minuto_checada<16){
                     $mdlChecadas->checada = '1';   // Entrada normal
-                    Session::flash('message','ENTRADA NORMAL '.$nombre);
+                    $msg='ENTRADA NORMAL';
                 } elseif ($minuto_checada>15 && $minuto_checada<31) {
                     $mdlChecadas->checada = '2';   //Retardo
-                    Session::flash('message','RETARDO '.$nombre);
+                    $msg='RETARDO';
                 } elseif ($minuto_checada>30) {
                     $mdlChecadas->checada = '3';    //FALTA POR TIEMPO
-                    Session::flash('message','FALTA '.$nombre);
+                    $msg='FALTA';
                 }
             }elseif($hora_checada>$hora_entrada)
             {
-                $mdlChecadas->checada = '3';   //FALTA POR OMISION
-                Session::flash('message','FALTA '.$nombre);
+                $mdlChecadas->checada = '5';   //FALTA POR OMISION
+                $msg='FALTA POR OMISION';
             }
             $mdlChecadas->save();
             //return 
-            return Redirect::to('/');      
+            return $msg;      
         } 
         else 
         {
@@ -306,7 +312,7 @@ class checkinController extends Controller
                 $estado='NORMAL';
                 $check='1';
             }
-            return $this->registrarSalida($entrada,$hora,$estado,$check,$hora_entrada,
+            return $this->registrarSalidaUno($entrada,$hora,$estado,$check,$hora_entrada,
              $hora_salida,$nombre,$var=0);
         }
 
@@ -325,26 +331,73 @@ class checkinController extends Controller
         {
             if($entrada[$var]->checada_salida==null)
             {
-                if($tolerancia<30)
+                if($tolerancia<5)
                 {
-                    Session::flash('message','ESPERE 30 MINUTOS - TRANSCURRIDO: '.$tolerancia.' min');
-                    return Redirect::to('/'); 
+                    $msg='YA HA SIDO REGISTRADO ESPERE 5 MINUTOS - TRANSCURRIDO: '.$tolerancia.' min';
+                    return $msg; 
                 }else
                 {
                     $entrada[$var]->checada_salida = $check;
                     $entrada[$var]->hora_salida = $hora;
                     $entrada[$var]->save();
-                    Session::flash('message','SALIDA '.$estado);
-                    return Redirect::to('/'); 
+                    $msg='SALIDA '.$estado;
+                    return $msg; 
                 }
             }else{
-                Session::flash('message','YA ESTÁ REGISADA UNA SALIDA A ESTE HORARIO: '
-                .$hora_entrada.':00 - '.$hora_salida.':00 '.$nombre);
-            return Redirect::to('/');
+                $msg='YA ESTÁ REGISADA UNA SALIDA A ESTE HORARIO: '
+                .$hora_entrada.':00 - '.$hora_salida.':00 ';
+            return $msg;
             } 
         }else{
-            Session::flash('message','NO HAY REGISTROS DE ENTRADA');
-            return Redirect::to('/');
+            $msg='NO HAY REGISTROS DE ENTRADA';
+            return $msg;
+        }
+    }
+    public function registrarSalidaUno($entrada,$hora,$estado,$check,$hora_entrada,
+     $hora_salida,$nombre,$var){
+        $entrada_count = $entrada->count();
+        
+
+        $h1 = new \Carbon\Carbon($entrada[$var]->hora);
+        $h2 = new \Carbon\Carbon($hora);
+        $tolerancia=$h1->diffInMinutes($h2);  
+        
+        if($entrada_count>0)
+        {
+            if($entrada[$var]->checada_salida==null)
+            {
+                if($tolerancia<5)
+                {
+                    $msg='YA HA SIDO REGISTRADO ESPERE 5 MINUTOS - TRANSCURRIDO: '.$tolerancia.' min';
+                    return $msg; 
+                }else
+                {
+                    $entrada[$var]->checada_salida = $check;
+                    $entrada[$var]->hora_salida = $hora;
+                    $entrada[$var]->save();
+                    $msg='SALIDA '.$estado;
+                    return $msg; 
+                }
+            }else{
+                $h3 = new \Carbon\Carbon($entrada[$var]->hora_salida);
+                $h4 = new \Carbon\Carbon($hora);
+                $tolerancia2=$h3->diffInMinutes($h4);  
+                if($tolerancia2<5)
+                {
+                    $msg='YA HA SIDO REGISTRADO ESPERE 5 MINUTOS - TRANSCURRIDO: '.$tolerancia2.' min';
+                    return $msg; 
+                }else
+                {
+                    $entrada[$var]->checada_salida = $check;
+                    $entrada[$var]->hora_salida = $hora;
+                    $entrada[$var]->save();
+                    $msg='SALIDA '.$estado;
+                    return $msg; 
+                }
+            } 
+        }else{
+            $msg='NO HAY REGISTROS DE ENTRADA';
+            return $msg;
         }
     }
 

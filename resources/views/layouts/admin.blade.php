@@ -3,7 +3,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>UES Virtual - {{ucfirst(Route::currentRouteName())}}</title>
+  <title>UES RH - {{ucfirst(Route::currentRouteName())}}</title>
   <link rel="icon" href="{!! asset('img/Icono256_UES.png') !!}"/>
 
   <!-- Tell the browser to be responsive to screen width -->
@@ -30,7 +30,7 @@
     <!-- Logo -->
     <a href="{{ Auth::check() ? url('/personal') : url('/login') }}" class="logo">
       <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><img src="{{asset('img/Icono256_UES.png')}}" alt="" height='50px' width='50px'><b>UES Virtual</b></span>
+      <span class="logo-lg"><img src="{{asset('img/Icono256_UES.png')}}" alt="" height='50px' width='50px'><b>UES RH</b></span>
     </a>
     
     <nav class="navbar navbar-static-top">
@@ -173,9 +173,9 @@
 
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> Alpha
+      <b>Version</b> A
     </div>
-    <strong>UES Virtual &copy; 2019 <a href="{{ url('/') }}">Unidad académica --</a>.</strong> 
+    <strong>UES Recursos humanos &copy; 2020 <a href="{{ url('/') }}">Unidad académica Navojoa</a>.</strong> 
   </footer>
 
 </div>
