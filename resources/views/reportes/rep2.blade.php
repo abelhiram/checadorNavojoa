@@ -78,6 +78,7 @@ if(!isset($_GET['fechaFinal'])){
                 <th>Incapacidad</th>
                 <th>Omisión de checada</th>
                 <th>Canje de tiempo extra</th>	
+                <th>Bono</th>
 			</thead>
 			@foreach($personal as $personals)
 				<tbody>
@@ -92,6 +93,11 @@ if(!isset($_GET['fechaFinal'])){
                         <td>{{reportesController::faltas($personals->id,4,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,5,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,6,$fechaInicio,$fechaFinal)}}</td>
+                        @if(reportesController::bono($personals->id,$fechaInicio,$fechaFinal)==0)
+                            <td><label class="glyphicon glyphicon-ok " style="color:green"></label></td>
+                        @else
+                            <td><label class="glyphicon glyphicon-remove"  style="color:red"></label></td>
+                        @endif
 					</tr>
 					<tr >
 						<td colspan="12" class="">

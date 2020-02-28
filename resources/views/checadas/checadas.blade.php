@@ -72,7 +72,7 @@ if(!isset($_GET['id'])){
 			<td>{{$checadas->hora}}</td>
 			@if($checadas->checada!=null)
 				@if($checadas->checada==0)
-				<td>Con bono</td>
+				<td>Entrada con bono</td>
 				@endif
 				@if($checadas->checada==1)
 				<td>Asistencia</td>
@@ -102,7 +102,7 @@ if(!isset($_GET['id'])){
 				<td>Permiso por horas inicio</td>
 				@endif	
 			@else
-			<td></td>			
+				<td>Con bono</td>			
 			@endif
 			<td>{{$checadas->hora_salida}}</td>
 			@if($checadas->checada_salida!=null)	

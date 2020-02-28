@@ -63,6 +63,27 @@ class reportesController extends Controller
         return $checadas;
 
     }
+    public static function bono($args,$f1,$f2){
+
+        $fechaInicio=$f1;
+        $fechaFinal=$f2;
+        $bono=0;
+        $checadas = \App\mdlChecadas::orderBy('id','desc')
+        ->where('id_tblPersonal', '=', $args)
+        ->whereBetween('fecha',[$fechaInicio,$fechaFinal])
+        ->get();
+        foreach($checadas as $ch){
+            if($ch->checada==3 || $ch->checada==2 || $ch->checada==5 || 
+            $ch->checada_salida==2 || $ch->checada_salida==5){
+                $bono = 1;
+            }
+        }
+        
+
+
+        return $bono;
+
+    }
     public function index(Request $request)
     {
 
