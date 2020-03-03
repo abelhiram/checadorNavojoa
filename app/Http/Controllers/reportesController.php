@@ -73,7 +73,7 @@ class reportesController extends Controller
         ->whereBetween('fecha',[$fechaInicio,$fechaFinal])
         ->get();
         foreach($checadas as $ch){
-            if($ch->checada==3 || $ch->checada==2 || $ch->checada==5 || 
+            if($ch->checada==1 ||$ch->checada==3 || $ch->checada==2 || $ch->checada==5 || 
             $ch->checada_salida==2 || $ch->checada_salida==5){
                 $bono = 1;
             }

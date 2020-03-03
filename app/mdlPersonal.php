@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class mdlPersonal extends Model
 {
-	protected $table = 'tblpersonal';   
+	protected $table = 'tblPersonal';   
 	protected $fillable = ['expediente','nombre','email', 'nombramiento','jornada','huella','modulo'];
 	
 	public function scopeNombre($query, $nombre){

@@ -85,7 +85,7 @@ class checkinController extends Controller
             $horarios = mdlHorarios::where([
                 ['id_tblPersonal', '=', $personal[0]->id],
                 ['dia', '=', $dia],
-            ])->get();
+            ])->orderBy('hora_entrada','ASC')->get();
 
             $horarios_count = count($horarios);
             $hora = date('H:i:s');

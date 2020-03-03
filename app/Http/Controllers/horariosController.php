@@ -110,7 +110,7 @@ class horariosController extends Controller
             Session::flash('message','Usuario inexistente');
             return Redirect::to('/personal');
         }
-        $horario = mdlHorarios::where('id_tblPersonal', '=', $id)->get(); 
+        $horario = mdlHorarios::where('id_tblPersonal', '=', $id)->orderBy('dia','ASC')->orderBy('hora_entrada','ASC')->get(); 
         return view('horarios/horarios',compact('horario','personal'));
 
         /*
