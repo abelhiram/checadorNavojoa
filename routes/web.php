@@ -31,11 +31,13 @@ Route::get('/reportes/reporteQuincenal/{id}/', 'ExcelController@getReporteQuince
 Route::get('/reportes/reporteSemanal/{id}', 'ExcelController@getReporteSemanal')->name('reporte.semanal');
 Route::get('/reportes/reportedepersonal/', 'ExcelController@getPersonal')->name('reportede.personal');
 Route::get('/reportes/getHorario/{id}', 'ExcelController@getHorario');
+Route::get('/reportesExelGen/','ExcelController@getReporteGeneral')->name('reportesExGen');
 
 //Route::resource('reportes','reportesController');
 Route::resource('personal','personalController');
 Route::resource('checadas','checadasController');
 Route::resource('horarios','horariosController');
+Route::resource('excel','ExcelController');
 Route::resource('checkin','checkinController');
 //Route::resource('reportesBono','reportesBono');
 
@@ -53,6 +55,7 @@ Route::get('/personal/','personalController@index')->name('personal');
 Route::get('/checadas/','checadasController@index')->name('checadas');
 Route::get('/horarios/','horariosController@index')->name('horarios');
 Route::get('/checar/id/{id_tblPersonal}','checkinController@store');
+Route::get('/permiso/id/{id_tblPersonal}','checkinController@permiso');
 Route::get('/check/', 'checadasController@fal');
 //Route::get('/checadas/f1/{fechaInicio}/f2/{fechaFinal}','checadasController@index')->name('checadas');
 Route::get('/horario/{id}','horariosController@crear')->name('horarios.crear');

@@ -11,11 +11,25 @@ if(!isset($_GET['fechaFinal'])){
 	$fechaFinal = $_GET['fechaFinal'];
 }
 ?>
+<script>
+var tableToExcel = (function() {
+  var uri = 'data:application/vnd.ms-excel;base64,'
+    , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="https://www.w3.org/TR/html401/"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
+    , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+    , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+  return function(table, name) {
+    if (!table.nodeType) table = document.getElementById(table)
+    var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+    window.location.href = uri + base64(format(template, ctx))
+  }
+})()
+
+</script>
 @extends('layouts.admin')
 {!!Html::style('http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css')!!}
 
 @section('pagina')
-	Reportes
+Reportes
 @stop
 
 @section('contenido')
@@ -35,6 +49,7 @@ if(!isset($_GET['fechaFinal'])){
 			<div class="panel-content">
 				<div class="row top30 bot30">
 					{!!Form::open(['route'=>'reportes', 'method'=>'GET', 'id'=>'formReportes', 'class'=>'form-block'])!!}
+
 						<div class="col-md-12 col-md-offset-1">
 							<div class="row">
 								<div class="col-md-5 ">
@@ -64,9 +79,11 @@ if(!isset($_GET['fechaFinal'])){
 			</div>
 		</div>
 	</div>
-	
+	<div class="col-md-4  col-md-offset-4 top15">
+        <input type="button" class="btn btn-primary btn-block" onclick="tableToExcel('testTable', 'Reportes generales')" value="Reportes generales excel">
+    </div>
 	<div class="tableInfo top30">
-		<table class="table table-hover table-striped">
+		<table class="table table-hover table-striped" id="testTable" summary="Code page support in different versions of MS Windows." rules="groups" >
 			<thead>
 				<th><span>Activo</span></th>
 				<th>No. Emp.</th>

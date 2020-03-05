@@ -82,6 +82,7 @@ class checkinController extends Controller
             $dia=date("N");
             $hoy = date("Y-m-d");
             
+            
             $horarios = mdlHorarios::where([
                 ['id_tblPersonal', '=', $personal[0]->id],
                 ['dia', '=', $dia],
@@ -99,7 +100,7 @@ class checkinController extends Controller
                     $hora_entrada = Carbon::parse($horarios[0]->hora_entrada)->hour;
                     $hora_salida = Carbon::parse($horarios[0]->hora_salida)->hour; 
                     return $this->registroUnHorario($nombre,$personal[0]->id, $hora, $hora_entrada,
-                    $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy);   
+                    $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy,$horarios);   
                 }
                 if($horarios_count>1)
                 {//varios horarios
@@ -134,7 +135,7 @@ class checkinController extends Controller
                             {
                                 if($entradasContempladas==$count)
                                 {  
-                                    if($hora_checada>$hor->hora_salida)
+                                    if($hora>$hor->hora_salida)
                                     {
                                         $entradasContempladas=$entradasContempladas+1; 
                                         $horasOmitidas=$horasOmitidas.' - '.$hor->hora_entrada.' - ';
@@ -162,22 +163,74 @@ class checkinController extends Controller
                             ])->count();
                             if($horarios_count>$salidas)
                             {
-                                $hora_entrada = Carbon::parse($horarios[$var]->hora_entrada)->hour;
-                                $hora_salida = Carbon::parse($horarios[$var]->hora_salida)->hour; 
                                 
-                                return $this->registroVariosHorario($nombre,$personal[0]->id, $hora, $hora_entrada,
-                                $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy,0,$turno,$var);  
+                                $hora_entrada2 = Carbon::parse($horarios[$var]->hora_entrada);
+                                $hora_salida2 = Carbon::parse($horarios[$var]->hora_salida); 
+                                $entrada = $this->entradas($personal[0]->id,$hoy);
+                                if($var>0){
+                                    $hora_salida3 = Carbon::parse($horarios[$var-1]->hora_salida); 
+                                    $h1 = new \Carbon\Carbon($hora_salida3);
+                                    $h2 = new \Carbon\Carbon($hora);
+                                    $diferencia=$h1->diffInMinutes($h2);
+                                    $sal;
+
+                                    if($h2>$h1){
+                                        $sal = $diferencia;
+                                    }else{
+                                        $sal = $diferencia-($diferencia*2);
+                                    }
+                                    if($sal<30){
+                                        if($sal<0){
+                                            $entrada[$var-1]->checada_salida = '2';
+                                            $msg='SALIDA ANTICIPADA';
+                                        }else{
+                                            $entrada[$var-1]->checada_salida = '1';
+                                            $msg='SALIDA NORMAL';
+                                        }
+                                        
+                                        $entrada[$var-1]->hora_salida = $hora;
+                                        $entrada[$var-1]->save();
+                                        
+                                        return $msg; 
+                                    }
+                                }
+                                
+                                return $this->registroVariosHorario($nombre,$personal[0]->id, $hora, $hora_entrada2,
+                                $hora_salida2, $hora_checada, $minuto_checada, $checada="0", $hoy,0,$turno,$var);  
                             }else{
-                                $msg = 'Último horario '.$horarios[$var-1]->hora_entrada.'-'.$horarios[$var-1]->hora_salida;
-                                return $msg;
+                                $hora_salida3 = Carbon::parse($horarios[$var-1]->hora_salida); 
+                                $h1 = new \Carbon\Carbon($hora_salida3);
+                                $h2 = new \Carbon\Carbon($hora);
+                                $diferencia=$h1->diffInMinutes($h2);
+                                $sal;
+                                $entrada = $this->entradas($personal[0]->id,$hoy);
+                                if($h2>$h1){
+                                    $sal = $diferencia;
+                                }else{
+                                    $sal = $diferencia-($diferencia*2);
+                                }
+                                if($sal<30){
+                                    if($sal<0){
+                                        $entrada[$var-1]->checada_salida = '2';
+                                        $msg='SALIDA ANTICIPADA AL ULTIMO HORARIO';
+                                    }else{
+                                        $entrada[$var-1]->checada_salida = '1';
+                                        $msg='SALIDA NORMAL AL ULTIMO HORARIO';
+                                    }
+                                    
+                                    $entrada[$var-1]->hora_salida = $hora;
+                                    $entrada[$var-1]->save();
+                                    
+                                    return $msg; 
+                                }
                             }
                             
                         } else {
 
                             $turno = 2;
                             $var = $entradas - 1;
-                            $hora_entrada = Carbon::parse($horarios[$var]->hora_entrada)->hour;
-                            $hora_salida = Carbon::parse($horarios[$var]->hora_salida)->hour; 
+                            $hora_entrada = Carbon::parse($horarios[$var]->hora_entrada);
+                            $hora_salida = Carbon::parse($horarios[$var]->hora_salida); 
         
                             return $this->registroVariosHorario($nombre,$personal[0]->id, $hora, $hora_entrada,
                             $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy,1,$turno,$var);
@@ -198,51 +251,69 @@ class checkinController extends Controller
      
     public function registroVariosHorario($nombre,$personal, $hora, $hora_entrada, $hora_salida,
      $hora_checada, $minuto_checada, $checada="0", $fecha,$solosalida=0,$turno,$var){
-   
+        
+        $check='0';
+        $h1 = new \Carbon\Carbon($hora_entrada);
+        $h2 = new \Carbon\Carbon($hora);
+        $diferencia=$hora_entrada->diffInMinutes($h2);
+        $dif;  
+        if($h1<$h2){
+            $dif = $diferencia;
+        }else{
+            $dif = $diferencia-($diferencia*2);
+        }
+        
         if($turno==1){
-            $mdlChecadas = new mdlChecadas();
-            $mdlChecadas->id_tblPersonal = $personal;
-            $mdlChecadas->hora = $hora;
-            $mdlChecadas->comentario = ' ';
-            $mdlChecadas->fecha = $fecha; 
-            //$mdlChecadas->turno = $turno; 
-
-            if($hora_checada<$hora_entrada){
-                $mdlChecadas->checada = '0'; 
-                $msg='ENTRADA CON BONO ';
-            } elseif($hora_checada==$hora_entrada){
-                if($minuto_checada==0){
-                    $mdlChecadas->checada = '0';    //Entrada con bono
-                    $msg='ENTRADA CON BONO ';
-                } elseif($minuto_checada>0 && $minuto_checada<16){
-                    $mdlChecadas->checada = '1';   // Entrada normal
-                    $msg='ENTRADA NORMAL ';
-                } elseif ($minuto_checada>15 && $minuto_checada<31) {
-                    $mdlChecadas->checada = '2';   //Retardo
-                    $msg='RETARDO ';
-                } elseif ($minuto_checada>30) {
-                    $mdlChecadas->checada = '3';    //FALTA
-                    $msg='FALTA ';
+            
+            if($hora>$hora_salida){
+                return $this->checada($personal,$hora,$com=null,$fecha,$check='5',$horasalida=$hora,$checadasalida='5',$msg='HORA DE ENTRADA NO ATENDIDA');
+            }
+            if($dif<=0)
+            {
+                if($dif<-30)
+                {
+                    $hor = Carbon::parse($hora_entrada)->hour;
+                    $min = Carbon::parse($hora_entrada)->minute;
+                    return "TU TURNO EMPIEZA LAS ".$hor.":".$min." DEBES ESPERAR UN POCO MAS";
                 }
-            } elseif($hora_checada>$hora_entrada){
-                 $mdlChecadas->checada = '3';   //FALTA
-                 $msg='FALTA '.$nombre;
+                //Puede ser cambiado a entrada con bono
+                $check = '0'; 
+                $msg='ENTRADA CON BONO ';
+            }
+            else
+            {
+                if($dif>0&&$dif<16)
+                {
+                    $check = '1';   // Entrada normal
+                    $msg='ENTRADA NORMAL';
+                } elseif ($dif>15&&$dif<31) 
+                {
+                    $check = '2';   //Retardo
+                    $msg='RETARDO';
+                } elseif ($dif>30) 
+                {
+                    $check = '3';    //FALTA POR TIEMPO
+                    $msg='FALTA';
+                }
             }
             
-            $mdlChecadas->save();
-            return $msg;     
+            return $this->checada($personal,$hora,$com=null,$fecha,$check,$horasalida=null,$checadasalida=null,$msg);   
 
         } else {  
             $entrada = $this->entradas($personal,$fecha);
-    
+            $dia=date("N");
+            $horarios = mdlHorarios::where([
+                ['id_tblPersonal', '=', $personal],
+                ['dia', '=', $dia],
+            ])->get();
             $estado='';
             $check='';
 
-            if($hora_checada<$hora_salida){ 
+            if($hora<$horarios[$var]->hora_salida){ 
                 $estado='ANTICIPADA';
                 $check='2';
             } 
-            elseif($hora_checada>=$hora_salida) {
+            elseif($hora>=$horarios[$var]->hora_salida) {
                 $estado='NORMAL';
                 $check='1';
             }
@@ -250,65 +321,82 @@ class checkinController extends Controller
              $hora_salida,$nombre,$var);
         }
     }
+    public function checada($id,$hora,$com,$fecha,$checada,$horasalida,$checadasalida,$msg){
+        $mdlChecadas = new mdlChecadas();
+        $mdlChecadas->id_tblPersonal = $id;
+        $mdlChecadas->hora = $hora;
+        $mdlChecadas->checada = $checada;
+        $mdlChecadas->hora_salida = $horasalida;
+        $mdlChecadas->checada_salida = $checadasalida;
+        $mdlChecadas->comentario = $com;
+        $mdlChecadas->fecha = $fecha;   
+        $mdlChecadas->save();
+        return $msg;
+    }
     public function registroUnHorario($nombre,$personal, $hora, $hora_entrada,
-     $hora_salida, $hora_checada, $minuto_checada, $checada="0", $fecha){
+     $hora_salida, $hora_checada, $minuto_checada, $checada="0", $fecha,$horarios){
 
         $registros = mdlChecadas::where([
             ['id_tblPersonal', '=', $personal],
             ['fecha', '=', $fecha],
         ])->count();
         
-        $hoy = date("Y-m-d");
+        $check='0';
+        $h1 = new \Carbon\Carbon($horarios[0]->hora_entrada);
+        $h2 = new \Carbon\Carbon($hora);
+        $diferencia=$h1->diffInMinutes($h2);
+        $dif;  
+        if($h1<$h2){
+            $dif = $diferencia;
+        }else{
+            $dif = $diferencia-($diferencia*2);
+        }
 
-        if($registros==0){
-            $mdlChecadas = new mdlChecadas();
-            $mdlChecadas->id_tblPersonal = $personal;
-            $mdlChecadas->hora = $hora;
-            $mdlChecadas->comentario = '';
-            $mdlChecadas->fecha = $fecha;   
-
-            if($hora_checada<$hora_entrada)
+        
+        if($registros==0)
+        {
+            if($hora>$horarios[0]->hora_salida){
+                return $this->checada($personal,$hora,$com=null,$fecha,$check='5',$horasalida=$hora,$checadasalida='5',$msg='HORA DE ENTRADA NO ATENDIDA');
+            }
+            if($dif<=0)
             {
                 //Puede ser cambiado a entrada con bono
-                $mdlChecadas->checada = '0'; 
+                $check = '0'; 
                 $msg='ENTRADA CON BONO ';
             }
-            elseif($hora_checada==$hora_entrada)
+            else
             {
-                if($minuto_checada==0){
-                    $mdlChecadas->checada = '0';    //Entrada con bono
-                    $msg='ENTRADA CON BONO';
-                } elseif($minuto_checada>0 && $minuto_checada<16){
-                    $mdlChecadas->checada = '1';   // Entrada normal
+                if($dif>0&&$dif<16)
+                {
+                    $check = '1';   // Entrada normal
                     $msg='ENTRADA NORMAL';
-                } elseif ($minuto_checada>15 && $minuto_checada<31) {
-                    $mdlChecadas->checada = '2';   //Retardo
+                } elseif ($dif>15&&$dif<31) 
+                {
+                    $check = '2';   //Retardo
                     $msg='RETARDO';
-                } elseif ($minuto_checada>30) {
-                    $mdlChecadas->checada = '3';    //FALTA POR TIEMPO
+                } elseif ($dif>30) 
+                {
+                    $check = '3';    //FALTA POR TIEMPO
                     $msg='FALTA';
                 }
-            }elseif($hora_checada>$hora_entrada)
-            {
-                $mdlChecadas->checada = '5';   //FALTA POR OMISION
-                $msg='FALTA POR OMISION';
             }
-            $mdlChecadas->save();
-            //return 
-            return $msg;      
+            
+            return $this->checada($personal,$hora,$com=null,$fecha,$check,$horasalida=null,$checadasalida=null,$msg);  
         } 
         else 
         {
             $entrada = $this->entradas($personal,$fecha);
-    
+            
             $estado='';
             $check='';
+            $h12 = new \Carbon\Carbon($horarios[0]->hora_salida);
 
-            if($hora_checada<$hora_salida){ 
+
+            if($hora<$h12){ 
                 $estado='ANTICIPADA';
                 $check='2';
             } 
-            elseif($hora_checada>=$hora_salida) {
+            elseif($hora>=$h12) {
                 $estado='NORMAL';
                 $check='1';
             }
@@ -344,9 +432,31 @@ class checkinController extends Controller
                     return $msg; 
                 }
             }else{
-                $msg='YA ESTÁ REGISADA UNA SALIDA A ESTE HORARIO: '
-                .$hora_entrada.':00 - '.$hora_salida.':00 ';
-            return $msg;
+                $h3 = new \Carbon\Carbon($entrada[$var]->hora_salida);
+                $h4 = new \Carbon\Carbon($hora);
+                $tolerancia2=$h3->diffInMinutes($h4);  
+                if($tolerancia2<5)
+                {
+                    $msg='YA HA SIDO REGISTRADO ESPERE 5 MINUTOS - TRANSCURRIDO: '.$tolerancia2.' min';
+                    return $msg; 
+                }else{
+                    $horarios = mdlHorarios::where([
+                        ['id_tblPersonal', '=', $personal[0]->id],
+                        ['dia', '=', $dia],
+                    ])->count();
+                    $registros = mdlChecadas::where([
+                        ['id_tblPersonal', '=', $personal],
+                        ['fecha', '=', $fecha],
+                    ])->count();
+
+                    if($horarios==$registros){
+                        $entrada[$var]->checada_salida = $check;
+                        $entrada[$var]->hora_salida = $hora;
+                        $entrada[$var]->save();
+                        $msg='SALIDA '.$estado;
+                        return $msg; 
+                    }
+                }
             } 
         }else{
             $msg='NO HAY REGISTROS DE ENTRADA';
@@ -388,6 +498,13 @@ class checkinController extends Controller
                     return $msg; 
                 }else
                 {
+                    if($entrada[$var]->checada=='5'){
+                        $entrada[$var]->checada_salida = '5';
+                        $entrada[$var]->hora_salida = $hora;
+                        $entrada[$var]->save();
+                        $msg='ENTRADA NO ATENDIDA, HORA DE ENTRADA: '.$hora_entrada.':00';
+                        return $msg; 
+                    }
                     $entrada[$var]->checada_salida = $check;
                     $entrada[$var]->hora_salida = $hora;
                     $entrada[$var]->save();
@@ -401,7 +518,60 @@ class checkinController extends Controller
         }
     }
 
+    public function permiso(Request $request)
+    {
+        $personal = mdlPersonal::where('expediente', '=', $request['id'])->get(); 
+        if($personal->count()==0)
+        {
+            return "NO EXISTE ESE USUARIO";     
+        }
 
+        $nombre = $personal[0]->nombre;
+        $fecha = date("Y-m-d");
+        $hora = date('H:i:s');
+
+        $entrada = $this->entradas($personal[0]->id,$fecha);
+
+        return $this->permisoPorHoras($entrada,$nombre,$personal[0]->id,$hora,$fecha); 
+    }
+
+    public function permisoPorHoras($entrada,$nombre,$personal,$hora,$fecha)
+    {
+        $entrada_count = $entrada->count();
+        
+        
+        if($entrada_count>0)
+        {
+            if($entrada[0]->entradaHoras==null)
+            {
+                $entrada[0]->entradaHoras = $hora;
+                $entrada[0]->save();
+                return ' Comienzo de permiso por horas'; 
+            }else{
+                if($entrada[0]->salidaHoras==null)
+                {
+                    $entrada[0]->salidaHoras = $hora;
+                    $entrada[0]->save();
+
+                    $h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
+                    $h2 = new \Carbon\Carbon($hora);
+                    $diff=$h1->diffInMinutes($h2);  
+                    $horasWork=$h1->diffInHours($h2);  
+
+                    return 'tiempo a compensar '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
+                }
+                else{
+                    $h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
+                    $h2 = new \Carbon\Carbon($entrada[0]->salidaHoras);
+                    $diff=$h1->diffInMinutes($h2);  
+                    $horasWork=$h1->diffInHours($h2);
+                    return 'Ya hay registro de un permiso por horas. tiempo a compensar '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
+                }
+            } 
+        }else{
+            return 'No hay registros de entrada';
+        }
+    }
     /**
      * Display the specified resource.
      *
