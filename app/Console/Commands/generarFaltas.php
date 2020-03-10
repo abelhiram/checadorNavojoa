@@ -78,8 +78,8 @@ class generarFaltas extends Command
                         {
                             $mdlChecadas = new mdlChecadas();
                             $mdlChecadas->id_tblPersonal = $personal->id;
-                            $mdlChecadas->checada = 5;
-                            $mdlChecadas->checada_salida = 5;
+                            $mdlChecadas->checada = 3;
+                            $mdlChecadas->checada_salida = 3;
                             $mdlChecadas->comentario = '';
                             $mdlChecadas->fecha = $hoy; 
                             $mdlChecadas->save();

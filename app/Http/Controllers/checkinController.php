@@ -96,11 +96,24 @@ class checkinController extends Controller
 
             if($horarios_count>0){    // este es el primer horario 
                 if($horarios_count==1){ //un solo horario
+                    $permisos = mdlChecadas::where([
+                        ['id_tblPersonal', '=', $personal[0]->id],
+                        ['entradaHoras', '!=', null],
+                        ['salidaHoras', '=', null],
+                        ['fecha', '=', $hoy],
+                    ])->get();
 
-                    $hora_entrada = Carbon::parse($horarios[0]->hora_entrada)->hour;
-                    $hora_salida = Carbon::parse($horarios[0]->hora_salida)->hour; 
-                    return $this->registroUnHorario($nombre,$personal[0]->id, $hora, $hora_entrada,
-                    $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy,$horarios);   
+                    if($permisos->count()!=0)
+                    {
+                        $msg = "TIENE UN PERMISO POR HORA NO ATENDIDO";
+                        return $msg;     
+
+                    }else{
+                        $hora_entrada = Carbon::parse($horarios[0]->hora_entrada)->hour;
+                        $hora_salida = Carbon::parse($horarios[0]->hora_salida)->hour; 
+                        return $this->registroUnHorario($nombre,$personal[0]->id, $hora, $hora_entrada,
+                        $hora_salida, $hora_checada, $minuto_checada, $checada="0", $hoy,$horarios); 
+                    }  
                 }
                 if($horarios_count>1)
                 {//varios horarios
@@ -113,22 +126,21 @@ class checkinController extends Controller
                         ['fecha', '=', $hoy],  
                     ])->count();
 
-                    $faltas = mdlChecadas::where([
+                    $permisos = mdlChecadas::where([
                         ['id_tblPersonal', '=', $personal[0]->id],
-                        ['checada', '=', 11],
+                        ['entradaHoras', '!=', null],
+                        ['salidaHoras', '=', null],
                         ['fecha', '=', $hoy],
                     ])->get();
 
-                    $falta=$faltas->count();
-
-                    if($falta!=0)
+                    if($permisos->count()!=0)
                     {
                         $msg = "TIENE UN PERMISO POR HORA NO ATENDIDO";
                         return $msg;     
 
                     }else{
                         if($entradas==$salidas){
-                            $horasOmitidas=' ';
+                        
                             $count=0;
                             $entradasContempladas=$entradas;
                             foreach($horarios as $hor)
@@ -138,7 +150,6 @@ class checkinController extends Controller
                                     if($hora>$hor->hora_salida)
                                     {
                                         $entradasContempladas=$entradasContempladas+1; 
-                                        $horasOmitidas=$horasOmitidas.' - '.$hor->hora_entrada.' - ';
 
                                         $mdlChecadas = new mdlChecadas();
                                         $mdlChecadas->id_tblPersonal = $personal[0]->id;
@@ -149,6 +160,7 @@ class checkinController extends Controller
                                         $mdlChecadas->comentario = '';
                                         $mdlChecadas->fecha = $hoy; 
                                         $mdlChecadas->save();
+                                        //return $this->checada($personal[0]->id,$hor->hora_entrada,$com=null,$hoy,'5',$hor->hora_salida,'5',$msg);  
                                     }
                                 }
                                 $count=$count+1;
@@ -520,7 +532,7 @@ class checkinController extends Controller
 
     public function permiso(Request $request)
     {
-        $personal = mdlPersonal::where('expediente', '=', $request['id'])->get(); 
+        $personal = mdlPersonal::where('expediente', '=', $request['id_tblPersonal'])->get(); 
         if($personal->count()==0)
         {
             return "NO EXISTE ESE USUARIO";     
@@ -558,14 +570,14 @@ class checkinController extends Controller
                     $diff=$h1->diffInMinutes($h2);  
                     $horasWork=$h1->diffInHours($h2);  
 
-                    return 'tiempo a compensar '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
+                    return 'PERMISO POR HORAS TOTAL: '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
                 }
                 else{
                     $h1 = new \Carbon\Carbon($entrada[0]->entradaHoras);
                     $h2 = new \Carbon\Carbon($entrada[0]->salidaHoras);
                     $diff=$h1->diffInMinutes($h2);  
                     $horasWork=$h1->diffInHours($h2);
-                    return 'Ya hay registro de un permiso por horas. tiempo a compensar '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
+                    return 'PERMISO POR HORAS TOTAL: '.$diff.' Minutos - (Total en horas : '.$horasWork.')';
                 }
             } 
         }else{

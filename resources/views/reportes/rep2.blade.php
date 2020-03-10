@@ -13,7 +13,7 @@ if(!isset($_GET['fechaFinal'])){
 ?>
 <script>
 var tableToExcel = (function() {
-  var uri = 'data:application/vnd.ms-excel;base64,'
+  var uri = 'application/vnd.openxmlformats-officedocument.spreadsheetml.template;base64,'
     , template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="https://www.w3.org/TR/html401/"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head><body><table>{table}</table></body></html>'
     , base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
     , format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
@@ -83,7 +83,7 @@ Reportes
         <input type="button" class="btn btn-primary btn-block" onclick="tableToExcel('testTable', 'Reportes generales')" value="Reportes generales excel">
     </div>
 	<div class="tableInfo top30">
-		<table class="table table-hover table-striped" id="testTable" summary="Code page support in different versions of MS Windows." rules="groups" >
+		<table class="table table-hover table-striped" id="" summary="Code page support in different versions of MS Windows." rules="groups" >
 			<thead>
 				<th><span>Activo</span></th>
 				<th>No. Emp.</th>
@@ -92,8 +92,10 @@ Reportes
                 <th>Comisión</th>
                 <th>Día económico</th>
                 <th>Inasistencias</th>
+                <th>Salida anticipada</th>
                 <th>Incapacidad</th>
-                <th>Omisión de checada</th>
+                <th>Omisión de entrada</th>
+                <th>Omisión de salida</th>
                 <th>Canje de tiempo extra</th>	
                 <th>Bono</th>
 			</thead>
@@ -107,8 +109,10 @@ Reportes
                         <td>{{reportesController::faltas($personals->id,8,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,7,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,3,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas2($personals->id,2,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,4,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,5,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas2($personals->id,5,$fechaInicio,$fechaFinal)}}</td>
                         <td>{{reportesController::faltas($personals->id,6,$fechaInicio,$fechaFinal)}}</td>
                         @if(reportesController::bono($personals->id,$fechaInicio,$fechaFinal)==0)
                             <td><label class="glyphicon glyphicon-ok " style="color:green"></label></td>
@@ -124,12 +128,14 @@ Reportes
                                         
                                         <table class="table table-hover table-striped">
                                         	<thead> 
-                                                <th>fecha</th>
-                                                <th>hora entrada</th>
-                                                <th>entrada</th>
-                                                <th>hora salida</th>
-                                                <th>salida</th>
-                                                <th>comentario</th>
+                                                <th>Fecha</th>
+                                                <th>Hora entrada</th>
+                                                <th>Entrada</th>
+                                                <th>Hora salida</th>
+                                                <th>Salida</th>
+                                                <th>Permiso por horas inicio</th>
+                                                <th>Permiso por horas fin</th>
+                                                <th>Comentario</th>
                                             </thead>
                                             @foreach(reportesController::falts($personals->id,$fechaInicio,$fechaFinal) as $ch)
                                             <tbody>
@@ -180,11 +186,12 @@ Reportes
                                                 @if($ch->checada_salida==11)
                                                 <td>Permiso por horas fin</td>
                                                 @endif
+                                                <td>{{$ch->entradaHoras}}</td>
+                                                <td>{{$ch->salidaHoras}}</td>
                                                 <td>{{$ch->comentario}}</td>
                                             </tbody>
                                             @endforeach
                                         </table>
-                                        
 									</div>
 								</div>
 							</div>	
@@ -194,6 +201,44 @@ Reportes
 			@endforeach	
 		</table>
 	</div>
+    
+		<table class="invisible" style="height:0%;position:absolute;" id="testTable">
+			<thead>
+				<th><span>Activo</span></th>
+				<th>No. Emp.</th>
+                <th>Nombre</th>
+                <th>Retardos</th>
+                <th>Comisión</th>
+                <th>Día económico</th>
+                <th>Inasistencias</th>
+                <th>Incapacidad</th>
+                <th>Omisión de checada</th>
+                <th>Canje de tiempo extra</th>	
+                <th>Bono</th>
+			</thead>
+			@foreach($personal as $personals)
+				<tbody>
+					<tr id="{{$personals->id}}">
+						<td><span {!! $personals->modulo == '1' ? "class='label label-default' title='No Activo'" : "class='label label-success' title='Activo'" !!}>{!! $personals->modulo == '1' ? 'No activo' : 'Activo' !!}</span> </td>	
+						<td>{{$personals->expediente}}</td>
+						<td class="text-uppercase">{{$personals->nombre}}</td>
+						<td>{{reportesController::faltas($personals->id,2,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas($personals->id,8,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas($personals->id,7,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas($personals->id,3,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas($personals->id,4,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas($personals->id,5,$fechaInicio,$fechaFinal)}}</td>
+                        <td>{{reportesController::faltas($personals->id,6,$fechaInicio,$fechaFinal)}}</td>
+                        @if(reportesController::bono($personals->id,$fechaInicio,$fechaFinal)==0)
+                            <td>SI</td>
+                        @else
+                            <td>NO</td>
+                        @endif
+					</tr>
+				</tbody>
+			@endforeach	
+		</table>
+	
 
 	<script type="text/javascript" src="{{ URL::asset('/js/reportes.js') }}"></script>
 	<link rel="stylesheet" href="{{ URL::asset('/css/reportes.css') }}">

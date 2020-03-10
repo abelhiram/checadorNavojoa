@@ -31,16 +31,64 @@ class reportesController extends Controller
 
         $fechaInicio=$f1;
         $fechaFinal=$f2;
-        
+        $count=0;
+        $i=0;
         $checadas = \App\mdlChecadas::orderBy('id','ASC')
         ->where('checada', '=', $opcion)
         ->where('id_tblPersonal', '=', $args)
         ->whereBetween('fecha',[$fechaInicio,$fechaFinal])
-        ->count();
+        ->get();
+        
+        foreach($checadas as $ch){
+            if($checadas[0]->id==$ch->id){
+                $count=$count+1;
+            }
+            else{
+                if($ch->fecha==$checadas[$i-1]->fecha){
 
+                }else{
+                    $count=$count+1;
+                }
+            }
+            $i=$i+1;
+        }
 
-        return $checadas;
+        return $count;
 
+        //revisar
+        /*
+            Si la opcion es Retardo, primero debe revisar la salida anticipada, si hay retardo no debe ponerlo, si hay salida anticipada
+            Las salidas anticipadas (9) tambien son inasistencias (quiere decir que salio antes)
+        */
+        
+    }
+    public static function faltas2($args, $opcion,$f1,$f2){
+
+        $fechaInicio=$f1;
+        $fechaFinal=$f2;
+        $count=0;
+        $i=0;
+        $checadas = \App\mdlChecadas::orderBy('id','ASC')
+        ->where('checada_salida', '=', $opcion)
+        ->where('id_tblPersonal', '=', $args)
+        ->whereBetween('fecha',[$fechaInicio,$fechaFinal])
+        ->get();
+        
+        foreach($checadas as $ch){
+            if($checadas[0]->id==$ch->id){
+                $count=$count+1;
+            }
+            else{
+                if($ch->fecha==$checadas[$i-1]->fecha){
+
+                }else{
+                    $count=$count+1;
+                }
+            }
+            $i=$i+1;
+        }
+
+        return $count;
 
         //revisar
         /*
@@ -98,7 +146,7 @@ class reportesController extends Controller
         $personal = \App\mdlPersonal::orderBy('modulo','ASC')->orderBy('nombre', 'ASC')
         ->nombre($nombre)
         ->expediente($expediente)
-        ->paginate(20);
+        ->paginate(100);
 
         return view('reportes',compact('personal'));
     }
@@ -113,10 +161,12 @@ class reportesController extends Controller
 
         $expediente=$request->get('expediente');    
 
-        $personal = \App\mdlPersonal::orderBy('modulo','ASC')->orderBy('nombre', 'ASC')
+        $personal = \App\mdlPersonal::where('modulo', '=', 0)
+        ->orwhere('modulo', '=', null)
         ->nombre($nombre)
         ->expediente($expediente)
-        ->paginate(20);
+        ->orderBy('nombre', 'ASC')
+        ->paginate(100);
 
         return view('reportes/rep2',compact('personal'));
     }
@@ -177,7 +227,10 @@ class reportesController extends Controller
     {
         $personal = mdlPersonal::where('id', '=', $id)->take(1)->get(); 
         $horario = mdlHorarios::where('id_tblPersonal', '=', $id)->get(); 
-        $checada = mdlChecadas::where('id_tblPersonal', '=', $id)->paginate(7); 
+        $checada = mdlChecadas::where('id_tblPersonal', '=', $id)
+        ->where('modulo', '=', 0)
+        ->orwhere('modulo', '=', null)
+        ->paginate(7); 
         return view('reportes\reportes',compact('horario','personal','checada'));
     }
 

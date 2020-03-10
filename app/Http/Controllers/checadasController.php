@@ -54,19 +54,23 @@ class checadasController extends Controller
      */
     public function store(Request $request)
     {
-        $mdlChecadas = new mdlChecadas();
-        
-        $mdlChecadas->id_tblPersonal = $request->input('id_tblPersonal');
-        $mdlChecadas->hora = $request->input('hora');  
-        $mdlChecadas->hora_salida = $request->input('hora_salida');  
-        $mdlChecadas->checada = $request->input('checada') ;
-        $mdlChecadas->checada_salida = $request->input('checada_salida') ;
-        $mdlChecadas->comentario = '';
-        $mdlChecadas->fecha = $request->input('fecha'); 
-        $mdlChecadas->save();
-        Session::flash('message','Checada creada correctamente');
-        //return 
-        return Redirect::to('/checadas/'.$request['id_tblPersonal']);
+        if($request['seguridad']!='aceptar'){
+            Session::flash('message','CLAVE DE SEGURIDAD INVÁLIDA');
+            return back()->withInput();
+        }else{
+            $mdlChecadas = new mdlChecadas();
+            
+            $mdlChecadas->id_tblPersonal = $request->input('id_tblPersonal');
+            $mdlChecadas->hora = $request->input('hora');  
+            $mdlChecadas->hora_salida = $request->input('hora_salida');  
+            $mdlChecadas->checada = $request->input('checada') ;
+            $mdlChecadas->checada_salida = $request->input('checada_salida') ;
+            $mdlChecadas->comentario = '';
+            $mdlChecadas->fecha = $request->input('fecha'); 
+            $mdlChecadas->save();
+            Session::flash('message','CHECADA CREADA CORRECTAMENTE');
+            return back();
+        }
   
     }
 
@@ -116,13 +120,17 @@ class checadasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $mdlChecadas = mdlChecadas::find($id);
-        $mdlChecadas->fill($request->all());
-        $mdlChecadas->save();
+        if($request['seguridad']!='aceptar'){
+            Session::flash('message','CLAVE DE SEGURIDAD INVÁLIDA');
+            return back()->withInput();
+        }else{
+            $mdlChecadas = mdlChecadas::find($id);
+            $mdlChecadas->fill($request->all());
+            $mdlChecadas->save();
 
-        Session::flash('message','Editado correctamente');
-
-        return Redirect::to('/checadas/'.$request['id_tblPersonal']);
+            Session::flash('message','CHECADA MODIFICADA CORRECTAMENTE');
+            return back();
+        }
     }
 
     /**
@@ -131,13 +139,18 @@ class checadasController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        $horario = mdlHorarios::find($id);
-        $checada = mdlChecadas::find($id);
-        mdlChecadas::destroy($id);
-        Session::flash('message','Eliminado correctamente');
-        return Redirect::to('/checadas/'.$checada->id_tblPersonal);
+        if($request['seguridad']!='aceptar'){
+            Session::flash('message','CLAVE DE SEGURIDAD INVÁLIDA');
+            return back()->withInput();
+        }else{
+            $horario = mdlHorarios::find($id);
+            $checada = mdlChecadas::find($id);
+            mdlChecadas::destroy($id);
+            Session::flash('message','Eliminado correctamente');
+            return Redirect::to('/checadas/'.$checada->id_tblPersonal);
+        }
     }
 
     public function index(Request $request)

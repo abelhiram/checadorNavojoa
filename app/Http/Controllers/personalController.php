@@ -125,24 +125,30 @@ class personalController extends Controller
             'nombre'=>'required|max:55',
             'email'=>'required|string|email|max:255',
         ]);
-
-        $mdlPersonal = mdlPersonal::findOrFail($id);
-        if($request->file('foto')!=null){
-        $extension = $request->file('foto')->getClientOriginalExtension();
-        $file_name = $request['expediente'].'.'.$extension;
-        Image::make($request->file('foto'))
-            ->resize(144,144)
-            ->save('img/usuarios/'.$file_name);
+        if($request['seguridad']!='aceptar'){
+            Session::flash('message','CLAVE DE SEGURIDAD INVÁLIDA');
+            return back()->withInput();
         }else{
-            $extension='no';
+            $mdlPersonal = mdlPersonal::findOrFail($id);
+            if($request->file('foto')!=null){
+            $extension = $request->file('foto')->getClientOriginalExtension();
+            $file_name = $request['expediente'].'.'.$extension;
+            Image::make($request->file('foto'))
+                ->resize(144,144)
+                ->save('img/usuarios/'.$file_name);
+            }else{
+                $extension='no';
+            }
+
+            $mdlPersonal->foto = $extension;
+            $mdlPersonal->fill($request->all());
+            $mdlPersonal->save();
+
+            Session::flash('message','PERSONAL ACTUALIZADO CORRECTAMENTE');
+            return back();
         }
 
-        $mdlPersonal->foto = $extension;
-        $mdlPersonal->fill($request->all());
-        $mdlPersonal->save();
-
-        Session::flash('message','personal editado correctamente');
-        return Redirect::to('/personal');
+        
     }
 
     /**

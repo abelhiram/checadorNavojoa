@@ -148,13 +148,18 @@ class horariosController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $mdlHorarios = mdlHorarios::find($id);
-        $mdlHorarios->fill($request->all());
-        $mdlHorarios->save();
+        if($request['seguridad']!='aceptar'){
+            Session::flash('message','CLAVE DE SEGURIDAD INVÁLIDA');
+            return back()->withInput();
+        }else{
+            $mdlHorarios = mdlHorarios::find($id);
+            $mdlHorarios->fill($request->all());
+            $mdlHorarios->save();
 
-        Session::flash('message','horario editado correctamente');
+            Session::flash('message','horario editado correctamente');
 
-        return Redirect::to('/horarios/'.$request['id_tblPersonal']);
+            return back();
+        }
     }
 
     /**
@@ -163,11 +168,16 @@ class horariosController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request,$id)
     {
-        $horario = mdlHorarios::find($id);
-        mdlHorarios::destroy($id);
-        Session::flash('message','horario eliminado correctamente');
-        return Redirect::to('/horarios/'.$horario->id_tblPersonal);
+        if($request['seguridad']!='aceptar'){
+            Session::flash('message','CLAVE DE SEGURIDAD INVÁLIDA');
+            return back()->withInput();
+        }else{
+            $horario = mdlHorarios::find($id);
+            mdlHorarios::destroy($id);
+            Session::flash('message','horario eliminado correctamente');
+            return Redirect::to('/horarios/'.$horario->id_tblPersonal);
+        }
     }
 }

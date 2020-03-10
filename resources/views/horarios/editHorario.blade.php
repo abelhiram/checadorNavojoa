@@ -8,7 +8,13 @@
 	Nombre: {{$personal->nombre}}
 @endforeach
 @stop
-
+@if(Session::has('message'))
+	<?php $message=Session::get('message') ?>
+	<div class="alert alert-success alert-dismissible" role="alert">
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		{{Session::get('message')}}
+	</div>
+@endif
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -45,14 +51,62 @@
 						</div>
 						<div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-							{!!Form::submit('Actualizar horario',['class'=>'btn btn-primary'])!!}
-							{!!link_to_route('horarios.show', $title = 'Cancelar', $parameters = $personal->id, $attributes = ['class'=>'btn btn-warning']);!!}
+							<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+								Actualizar
+								</button>
+<!-- Modal -->
+								<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="exampleModalLongTitle">¿Estas seguro que deseas modificar este horario?</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+									<h5 class="modal-title" id="exampleModalLongTitle">Ingresa la clave se seguridad</h5>
+									{!!Form::password('seguridad',null,['class' => 'form-control','placeholder'=>'Clave de seguridad','type' => 'password'])!!}
+									
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+										{!!Form::submit('Aceptar',['class'=>'btn btn-primary'])!!}
+									</div>
+									</div>
+								</div>
+								</div>
+							{!!link_to_route('horarios.show', $title = 'Volver', $parameters = $personal->id, $attributes = ['class'=>'btn btn-warning']);!!}
 							{!!Form::close()!!}	
                             </div>
 						</div>
 						{!!Form::open(['route'=>['horarios.destroy',$mdlHorarios->id],'method'=>'DELETE'])!!}
-
-						{!!Form::submit('Eliminar',['class'=>'btn btn-danger pull-right','style'=>'margin-top:-49px;margin-right:130px;'])!!}
+						<button type="button" class="btn btn-danger pull-right" style="margin-top:-49px;margin-right:130px;" data-toggle="modal" data-target="#exampleModal">
+								Eliminar
+								</button>
+<!-- Modal -->
+								<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered" role="document">
+									<div class="modal-content">
+									<div class="modal-header">
+										<h5 class="modal-title" id="exampleModalLongTitle">¿Estas seguro que deseas modificar este usuario?</h5>
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+										</button>
+									</div>
+									<div class="modal-body">
+									<h5 class="modal-title" id="exampleModalLongTitle">Ingresa la clave se seguridad</h5>
+									{!!Form::password('seguridad',null,['class' => 'form-control','placeholder'=>'Clave de seguridad','type' => 'password'])!!}
+									
+									</div>
+									<div class="modal-footer">
+										<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+										{!!Form::submit('Aceptar',['class'=>'btn btn-danger'])!!}
+									</div>
+									</div>
+								</div>
+								</div>
+						
 						{!!Form::close()!!}
 					</div>
 				</div>

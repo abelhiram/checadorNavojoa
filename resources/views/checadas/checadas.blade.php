@@ -64,6 +64,8 @@ if(!isset($_GET['id'])){
 			<th>Entrada</th>
 			<th>Hora de salida</th>
 			<th>Salida</th>
+			<th>Permiso por horas inicio</th>
+			<th>Permiso por horas fin</th>
 			<th>Comentario</th>
 			<th>Fecha</th>
 		</thead>
@@ -122,6 +124,8 @@ if(!isset($_GET['id'])){
 			@else
 			<td></td>
 			@endif
+			<td>{{$checadas->entradaHoras}}</td>
+			<td>{{$checadas->salidaHoras}}</td>
 			<td>{{$checadas->comentario}}</td>
 			<td>{{$checadas->fecha}}</td>
 			<td>
