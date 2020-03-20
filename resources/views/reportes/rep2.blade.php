@@ -151,7 +151,7 @@ Reportes
                                                 <td>Retardo</td>
                                                 @endif
                                                 @if($ch->checada==3)
-                                                <td>Falta por tiempo</td>
+                                                <td>Inasistencia</td>
                                                 @endif
                                                 @if($ch->checada==4)
                                                 <td>Incapacidad</td>
@@ -183,6 +183,9 @@ Reportes
                                                 @if($ch->checada_salida==2)
                                                 <td>Salida anticipada</td>
                                                 @endif
+                                                @if($ch->checada_salida==3)
+                                                <td>Inasistencia</td>
+                                                @endif                                                
                                                 @if($ch->checada_salida==5)
                                                 <td>Omision</td>
                                                 @endif

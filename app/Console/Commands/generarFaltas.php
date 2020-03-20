@@ -64,13 +64,13 @@ class generarFaltas extends Command
                         
                         $entradas = mdlChecadas::where([
                             ['id_tblPersonal', '=', $personal->id],
-                            ['hora', '!=', null],
+                            ['checada', '!=', null],
                             ['fecha', '=', $hoy],
                         ])->get();
                         
                         $omisiones = mdlChecadas::where([
                             ['id_tblPersonal', '=', $personal->id],
-                            ['hora_salida', '=', null],
+                            ['checada_salida', '=', null],
                             ['fecha', '=', $hoy],
                         ])->get();
         
