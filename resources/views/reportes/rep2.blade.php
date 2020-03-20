@@ -171,6 +171,9 @@ Reportes
                                                 @if($ch->checada==11)
                                                 <td>Permiso por horas inicio</td>
                                                 @endif
+                                                @if($ch->checada==12)
+                                                <td>Justificación: día festivo</td>
+                                                @endif  
 
                                                 <td>{{$ch->hora_salida}}</td>
 
@@ -186,6 +189,9 @@ Reportes
                                                 @if($ch->checada_salida==11)
                                                 <td>Permiso por horas fin</td>
                                                 @endif
+                                                @if($ch->checada==12)
+                                                <td>Justificación: día festivo</td>
+                                                @endif  
                                                 <td>{{$ch->entradaHoras}}</td>
                                                 <td>{{$ch->salidaHoras}}</td>
                                                 <td>{{$ch->comentario}}</td>

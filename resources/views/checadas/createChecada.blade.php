@@ -42,7 +42,7 @@
 						<div class="form-group row">
                             <label for="checada" class="col-md-4 col-form-label text-md-right">Checada</label>
                             <div class="col-md-6">
-								{!!Form::select('checada',['0'=>'Entrada con bono','1'=>'Entrada','2'=>'Retardo','3'=>'Falta','4'=>'Incapacidad','5'=>'Omisión de checada','6'=>'Canje de tiempo extra','7'=>'Día económico','8'=>'Comisión','11'=>'Permiso por horas inicio'],null, ['class' => 'form-control'])!!}
+								{!!Form::select('checada',[null=>null,'0'=>'Entrada con bono','1'=>'Entrada','2'=>'Retardo','3'=>'Falta','4'=>'Incapacidad','5'=>'Omisión de checada','6'=>'Canje de tiempo extra','7'=>'Día económico','8'=>'Comisión','11'=>'Permiso por horas inicio','12'=>'Justificación: día festivo'],null, ['class' => 'form-control'])!!}
                             </div>
 						</div>
 						<div class="form-group row">
@@ -54,7 +54,7 @@
 						<div class="form-group row">
                             <label for="checada" class="col-md-4 col-form-label text-md-right">Checada de salida</label>
                             <div class="col-md-6">
-								{!!Form::select('checada_salida',['1'=>'Salida normal','2'=>'Salida anticipada','5'=>'Omisión de salida','11'=>'Permiso por horas fin'],null, ['class' => 'form-control'])!!}
+								{!!Form::select('checada_salida',[null=>null,'1'=>'Salida normal','2'=>'Salida anticipada','5'=>'Omisión de salida','11'=>'Permiso por horas fin','12'=>'Justificación: día festivo'],null, ['class' => 'form-control'])!!}
                             </div>
 						</div>
 						<div class="form-group row">

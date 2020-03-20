@@ -102,6 +102,9 @@ if(!isset($_GET['id'])){
 				@endif
 				@if($checadas->checada==11)
 				<td>Permiso por horas inicio</td>
+				@endif
+				@if($checadas->checada==12)
+				<td>Justificación: día festivo</td>
 				@endif	
 			@else
 				<td>Con bono</td>			
@@ -121,6 +124,9 @@ if(!isset($_GET['id'])){
 				@if($checadas->checada==11)
 				<td>Permiso por horas fin</td>
 				@endif
+				@if($checadas->checada==12)
+				<td>Justificación: día festivo</td>
+				@endif	
 			@else
 			<td></td>
 			@endif
