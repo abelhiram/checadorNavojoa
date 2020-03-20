@@ -321,11 +321,14 @@ class checkinController extends Controller
             $estado='';
             $check='';
 
-            if($hora<$horarios[$var]->hora_salida){ 
+            $h = Carbon::parse($horarios[$var]->hora_salida);
+            $h = $h->format('H:i:s');
+
+            if($hora<$h){ 
                 $estado='ANTICIPADA';
                 $check='2';
             } 
-            elseif($hora>=$horarios[$var]->hora_salida) {
+            elseif($hora>=$h) {
                 $estado='NORMAL';
                 $check='1';
             }
@@ -404,7 +407,6 @@ class checkinController extends Controller
             $h12 = Carbon::parse($horarios[0]->hora_salida);
             $h12 = $h12->format('H:i:s');
 
-            $hora2 = date('H:i:s');
             if($hora<$h12){ 
                 $estado='ANTICIPADA';
                 $check='2';
