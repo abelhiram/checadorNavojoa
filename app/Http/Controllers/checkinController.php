@@ -354,8 +354,7 @@ class checkinController extends Controller
         ])->count();
         
         $check='0';
-        $h1 = Carbon::parse($horarios[0]->hora_entrada);
-        $h1 = $h1->format('H:i:s');
+        $h1 = new \Carbon\Carbon($horarios[0]->hora_entrada);
         $h2 = new \Carbon\Carbon($hora);
         $diferencia=$h1->diffInMinutes($h2);
         $dif;  
@@ -405,16 +404,16 @@ class checkinController extends Controller
             $h12 = Carbon::parse($horarios[0]->hora_salida);
             $h12 = $h12->format('H:i:s');
 
-            //('H:i:s');
+            $hora2 = date('H:i:s');
             if($hora<$h12){ 
                 $estado='ANTICIPADA';
                 $check='2';
-                
+
             } 
             else{
                 $estado='NORMAL';
                 $check='1';
-                
+
             }
             return $this->registrarSalidaUno($entrada,$hora,$estado,$check,$hora_entrada,
              $hora_salida,$nombre,$var=0);
@@ -426,8 +425,8 @@ class checkinController extends Controller
      $hora_salida,$nombre,$var){
         $entrada_count = $entrada->count();
         
-        $h1 = Carbon::parse($entrada[$var]->hora);
-        $h1 = $h1->format('H:i:s');
+
+        $h1 = new \Carbon\Carbon($entrada[$var]->hora);
         $h2 = new \Carbon\Carbon($hora);
         $tolerancia=$h1->diffInMinutes($h2);  
         
@@ -448,9 +447,7 @@ class checkinController extends Controller
                     return $msg; 
                 }
             }else{
-                
-                $h3 = Carbon::parse($entrada[$var]->hora_salida);
-        		$h3 = $h3->format('H:i:s');
+                $h3 = new \Carbon\Carbon($entrada[$var]->hora_salida);
                 $h4 = new \Carbon\Carbon($hora);
                 $tolerancia2=$h3->diffInMinutes($h4);  
                 if($tolerancia2<5)
@@ -485,8 +482,8 @@ class checkinController extends Controller
      $hora_salida,$nombre,$var){
         $entrada_count = $entrada->count();
         
-        $h1 = Carbon::parse($entrada[$var]->hora);
-        $h1 = $h1->format('H:i:s');
+
+        $h1 = new \Carbon\Carbon($entrada[$var]->hora);
         $h2 = new \Carbon\Carbon($hora);
         $tolerancia=$h1->diffInMinutes($h2);  
         
@@ -507,9 +504,7 @@ class checkinController extends Controller
                     return $msg; 
                 }
             }else{
-                
-                $h3 = Carbon::parse($entrada[$var]->hora_salida);
-        		$h3 = $h3->format('H:i:s');
+                $h3 = new \Carbon\Carbon($entrada[$var]->hora_salida);
                 $h4 = new \Carbon\Carbon($hora);
                 $tolerancia2=$h3->diffInMinutes($h4);  
                 if($tolerancia2<5)
